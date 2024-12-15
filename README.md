@@ -1,6 +1,6 @@
 # Gakuen_Calc
 
-基于 [HoshinoBotV2](https://github.com/Ice-Cirno/HoshinoBot) 的 [学園アイドルマスター](https://gakuen.idolmaster-official.jp/) 的分数线查询插件
+基于 [HoshinoBotV2](https://github.com/Ice-Cirno/HoshinoBot) 的 [学園アイドルマスター](https://gakuen.idolmaster-official.jp/) 分数线查询插件
 
 旨在为学友们提供明确的在特定三围下的各评级最低分数线
 
