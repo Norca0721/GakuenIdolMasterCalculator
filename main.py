@@ -51,7 +51,7 @@ async def calculate_score(bot, ev: CQEvent):
             required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
             if required_score > 0:
                 msg += f"需要达到等级 {rank_result} 的最低score为: {math.ceil(required_score)}\n"
-            elif required_score == 10000000:
+            elif required_score >= 10000000:
                 msg += f"需要达到等级 {rank_result} 的最低score为: 不可能达成\n"
         await bot.send(ev,  msg)
 
