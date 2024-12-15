@@ -12,8 +12,8 @@
 
 - Python 3.9+
 
-### 开启插件
-
+### 启动插件
+- 在hoshinobot/config/__bot__.py中添加插件
 - 在想要开启的群聊中发送：```开启 Gakuen_Calc```
 
 ### 指令
