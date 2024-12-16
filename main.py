@@ -6,8 +6,8 @@ from hoshino.typing import CQEvent
 
 sv = Service('Gakuen_Calc', manage_priv=priv.SUPERUSER, enable_on_default=False)
 help = (
-'/学mas算分 Vo Da Vi   |   计算特定三围下各评级所需分数\n' +
-'/学mas算分 Vo Da Vi 终测分数  |   计算特定三围分数能够达成的最低评级'
+'/学mas算分 Vo Da Vi   |   计算特定三维下各评级所需分数\n' +
+'/学mas算分 Vo Da Vi 终测分数  |   计算特定三维分数能够达成的最低评级'
 )
 
 @sv.on_prefix(['/学mas算分', '/算分'])
@@ -33,7 +33,7 @@ async def calculate_score(bot, ev: CQEvent):
         total_score = status + bonus + rank_score
         rank_result = await calculate_rank(total_score)
 
-        await bot.send(ev, f"目前的属性与分数能达到的最高评级为{rank_result}")
+        await bot.send(ev, f"目前的三维与分数能达到的最高评级为{rank_result}")
 
     elif len(args) == 3:
         pre_status = []
@@ -43,7 +43,7 @@ async def calculate_score(bot, ev: CQEvent):
         rank = 1
         mode = "master"
         msg = ""
-        msg += f"在属性为 {pre_status[0]} {pre_status[1]} {pre_status[2]} 的情况下\n"
+        msg += f"在三维为 {pre_status[0]} {pre_status[1]} {pre_status[2]} 的情况下\n"
         rank_results = ["SS+", "SS", "S+", "S", "A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"]
         print("模式：" + mode + " | Vo：" + str(pre_status[0]) + " | Da：" + str(pre_status[1]) + " | Vi：" + str(
             pre_status[2]))
