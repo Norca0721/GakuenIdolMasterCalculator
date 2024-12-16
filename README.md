@@ -1,4 +1,4 @@
-# Gakuen_Calc
+# GakuenIdolMasterCalculator
 
 基于 [HoshinoBotV2](https://github.com/Ice-Cirno/HoshinoBot) 的 [学園アイドルマスター](https://gakuen.idolmaster-official.jp/) 分数线查询插件
 
