@@ -120,7 +120,15 @@ async def required_score_for_rank(target_rank, pre_status, rank, mode):
     required_total_score = rank_thresholds.get(target_rank, 0)
 
     async def find_required_score(required_total_score):
-        low, high = 0, 10000000
+        low = 0
+        high = 18000000
+        while True:
+            bonus = await score_bonus(high)
+            total = status + bonus + rank_score
+            if total >= required_total_score:
+                break
+            high *= 2
+            
         while high - low > 0.1:
             mid = (low + high) / 2
             bonus = await score_bonus(mid)
@@ -129,7 +137,9 @@ async def required_score_for_rank(target_rank, pre_status, rank, mode):
                 low = mid
             else:
                 high = mid
+
         return low
+
 
     required_score = await find_required_score(required_total_score)
 
