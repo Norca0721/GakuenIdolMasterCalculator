@@ -8,6 +8,8 @@ async def status_calc(mode, pre_status, rank):
         status_limis = 1500
     elif mode == "master":
         status_limis = 1800
+    elif mode == "nia":
+        status_limis = 2000
 
     if rank == 1:
         status_bouns = 30
