@@ -130,14 +130,15 @@ async def calculate_score(bot, ev: CQEvent):
             for rank_result in rank_results:
                 required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
                 if required_score > 0:
-                    msg += f"达到等级 {rank_result} 需要的最低スコア为: {math.ceil(required_score)}\n"
+                    msg += f"达成等级 {rank_result} 需要的最低スコア为: {math.ceil(required_score)}\n"
 
         elif mode == "nia":
             msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} = {pre_score} 的情况下\n"
             for rank_result in rank_results:
                 required_score = await required_score_for_fans(rank_result, pre_status, mode)
+                fans_rk = await fans_rank(required_score)
                 if required_score > 0:
-                    msg += f"达到等级 {rank_result} 需要的最低ランク为: {math.ceil(required_score)}\n"
+                    msg += f"达成等级 {rank_result} 需要的最低ランク为: {math.ceil(required_score)} | 对应的ランク评级：{fans_rk}\n"
             nia_tip = "\n注：N.I.A.模式的最终选拔通过的奖励ランク算法缺失，ランク仅供参考"
             
         if len(msg.split("\n")) == 2:
@@ -176,8 +177,9 @@ async def calculate_score(bot, ev: CQEvent):
         rank_results = ["SS+", "SS", "S+", "S", "A+", "A"]
         for rank_result in rank_results:
             required_score = await required_score_for_rank(rank_result, pre_status, rank, mode, fans)
+
             if required_score > 0:
-                msg += f"达到等级 {rank_result} 需要的最低score为: {math.ceil(required_score)}\n"
+                msg += f"达成等级 {rank_result} 需要的最低スコア为: {math.ceil(required_score)}\n"
 
         msg = msg.rstrip("\n")
         await bot.send(ev,  msg)
