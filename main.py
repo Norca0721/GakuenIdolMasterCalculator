@@ -7,8 +7,8 @@ from hoshino.typing import CQEvent
 sv = Service('Gakuen_Calc', manage_priv=priv.SUPERUSER, enable_on_default=False)
 help = (
 '/学mas算分 Vo Da Vi [regular|pro|master|nia]  |  计算特定三维下各评级所需スコア和ランク\n' +
-'/学mas算分 Vo Da Vi 终测分数  |   计算特定三维与终测分数能够达成的最低评级\n' +
-'✧ 说明事项：在不指定难度的情况，单项属性上限默认的1800'
+'/学mas算分 Vo Da Vi [スコア|ランク] [regular|pro|master|nia] |   计算特定三维与スコア或ランク能够达成的最低评级\n' +
+'✧ 说明事项：在不指定难度的情况，单项属性上限默认的1800\n' +
 '✧ 说明事项：N.I.A.模式的最终选拔通过的ランク奖励算法缺失'
 )
 
@@ -18,7 +18,7 @@ async def calculate_score(bot, ev: CQEvent):
     args = ev.message.extract_plain_text().split()
     try:
         target_score = int(args[3])
-        mode = None
+        mode = str(args[4]).lower()
     except ValueError:
         mode = str(args[3]).lower()
         target_score = None
@@ -26,33 +26,95 @@ async def calculate_score(bot, ev: CQEvent):
         target_score = None
         mode = None
 
-    if len(args) == 4 and isinstance(target_score, int):
+    if len(args) == 5 and isinstance(target_score, int):
         try:
-            if int(args[0]) >= 1800:
-                args[0] = 1800 - 30
-            if int(args[1]) >= 1800:
-                args[1] = 1800 - 30
-            if int(args[2]) >= 1800:
-                args[2] = 1800 - 30
+            if mode == "regular":
+                if int(args[0]) >= 1200:
+                    args[0] = 1200
+                if int(args[1]) >= 1200:
+                    args[1] = 1200
+                if int(args[2]) >= 1200:
+                    args[2] = 1200
+            elif mode == "pro":
+                if int(args[0]) >= 1500:
+                    args[0] = 1500
+                if int(args[1]) >= 1500:
+                    args[1] = 1500
+                if int(args[2]) >= 1500:
+                    args[2] = 1500
+            elif mode == "master":
+                if int(args[0]) >= 1800:
+                    args[0] = 1800
+                if int(args[1]) >= 1800:
+                    args[1] = 1800
+                if int(args[2]) >= 1800:
+                    args[2] = 1800
+            elif mode == "nia":
+                if int(args[0]) >= 2000:
+                    args[0] = 2000
+                if int(args[1]) >= 2000:
+                    args[1] = 2000
+                if int(args[2]) >= 2000:
+                    args[2] = 2000
         except:
             await bot.send(ev, "输入的属性必须为整数")
             return
 
         pre_status = [int(args[0]), int(args[1]), int(args[2])]
-        pre_score = pre_status[0] + pre_status[1] + pre_status[2] + 90
-
+        pre_score = pre_status[0] + pre_status[1] + pre_status[2]
+        bonus = 90
+        
+        if mode == "regular":
+            if pre_status[0] == 1200:
+                bonus -= 30
+            if pre_status[1] == 1200:
+                bonus -= 30
+            if pre_status[2] == 1200:
+                bonus -= 30
+        elif mode == "pro":
+            if pre_status[0] == 1500:
+                bonus -= 30
+            if pre_status[1] == 1500:
+                bonus -= 30
+            if pre_status[2] == 1500:
+                bonus -= 30
+        elif mode == "master":
+            if pre_status[0] == 1800:
+                bonus -= 30
+            if pre_status[1] == 1800:
+                bonus -= 30
+            if pre_status[2] == 1800:
+                bonus -= 30
+        elif mode == "nia":
+            if pre_status[0] == 2000:
+                bonus = 0
+            if pre_status[1] == 2000:
+                bonus = 0
+            if pre_status[2] == 2000:
+                bonus = 0
+        
         score = int(args[3])
         rank = 1
-        mode = "master"
+        mode = mode
+        if mode in ["regular", "pro", "master"]:
+            bonus = await score_bonus(score)
+            status = await status_calc(mode, pre_status, rank)
+            rank_score = await rank_bonust(rank)
 
-        bonus = await score_bonus(score)
-        status = await status_calc(mode, pre_status, rank)
-        rank_score = await rank_bonust(rank)
+            total_score = status + bonus + rank_score
+            rank_result = await calculate_rank(total_score)
 
-        total_score = status + bonus + rank_score
-        rank_result = await calculate_rank(total_score)
-
-        await bot.send(ev, f"目前的三维({pre_score})与分数能达到的最高评级为{rank_result}")
+            await bot.send(ev, f"目前的三维({pre_score})与スコア能达到的最高评级为{rank_result} | 对应スコア：{total_score}")
+        elif mode == "nia":
+            bonus = await rank_bonus(score)
+            status = await status_calc(mode, pre_status, rank=0)
+            
+            total_score = status + bonus
+            fans_rk = await fans_rank(target_score)
+            rank_result = await calculate_rank(total_score)
+            await bot.send(ev, f"目前的三维({pre_score})与ランク能达到的最高评级为{rank_result} | 对应ランク：{total_score} | 对应ランク评价：{fans_rk}")
+            
+            
         
     elif len(args) == 4 and isinstance(mode, str):
         try:

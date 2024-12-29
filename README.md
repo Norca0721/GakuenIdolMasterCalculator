@@ -30,7 +30,7 @@ N.I.A.模式的最终选拔通过的ランク奖励算法缺失
 
 **v 1.0.0 - 2024.12.29**
 1. 初模式スコア逆算器和计算器
-2. N.I.A模式ランク逆算器
+2. N.I.A模式ランク逆算器和计算器
 - 感谢 [学マス評価値計算機](https://gkms-calc.netlify.app/) 和 
 [学マス計算機（公開用）](https://docs.google.com/spreadsheets/d/1eEdzfHGi7iXpohR-UHr5-W1z7PcYBqQr8OAV7gcvhR8/edit?gid=0#gid=0)
  提供的算法
