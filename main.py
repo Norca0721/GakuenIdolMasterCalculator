@@ -113,9 +113,7 @@ async def calculate_score(bot, ev: CQEvent):
             fans_rk = await fans_rank(target_score)
             rank_result = await calculate_rank(total_score)
             await bot.send(ev, f"目前的三维({pre_score})与ランク能达到的最高评级为{rank_result} | 对应ランク：{total_score} | 对应ランク评价：{fans_rk}")
-            
-            
-        
+
     elif len(args) == 4 and isinstance(mode, str):
         try:
             if mode == "regular":
