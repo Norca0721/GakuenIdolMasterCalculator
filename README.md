@@ -22,7 +22,7 @@ N.I.A.模式的最终选拔通过的ランク奖励算法缺失
 ### 指令
 
 - /学mas算分 Vo Da Vi [regular|pro|master|nia]  |  计算特定三维下各评级所需スコア和ランク
-- /学mas算分 Vo Da Vi 终测分数  |   计算特定三维与终测分数能够达成的评级
+- /学mas算分 Vo Da Vi [スコア|ランク] [regular|pro|master|nia]  |   计算特定三维与终测分数能够达成的评级
 
 ### 更新日志
 
