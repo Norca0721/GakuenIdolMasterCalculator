@@ -17,6 +17,9 @@ async def status_calc(mode, pre_status, rank):
         status_bouns = 20
     elif rank == 3:
         status_bouns = 10
+    elif rank == 0:
+        status_bouns = 0
+
 
     vo = pre_status[0] + status_bouns
     da = pre_status[1] + status_bouns
@@ -59,6 +62,27 @@ async def score_bonus(score):
 
     return total_score
 
+async def rank_bonus(rank):
+    thresholds = [(20000, 0.1), (40000, 0.085), (60000, 0.07), (80000, 0.065), (100000, 0.06), (float('inf'), 0.055)]
+
+    total_score = 0
+    prev_threshold = 0
+
+    for threshold, multiplier in thresholds:
+        if rank > prev_threshold:
+            # 计算当前区间的分数范围
+            if rank <= threshold:
+                # 如果分数在当前区间内，计算当前区间的得分
+                segment_score = math.floor((rank - prev_threshold) * multiplier)
+                total_score += segment_score
+                break
+            else:
+                # 如果分数超过当前区间的最大值，计算该区间的最大得分
+                segment_score = math.floor((threshold - prev_threshold) * multiplier)
+                total_score += segment_score
+        prev_threshold = threshold
+
+    return total_score
 
 # 排名加成
 async def rank_bonust(rank):
@@ -97,6 +121,29 @@ async def calculate_rank(evaluation_score):
     else:
         return "D"
 
+async def fans_rank(fans):
+    if fans >= 120000:
+        return "SS+"
+    elif fans >= 100000:
+        return "SS"
+    elif fans >= 80000:
+        return "S+"
+    elif fans >= 60000:
+        return "S"    
+    elif fans >= 40000:
+        return "A+"
+    elif fans >= 30000:
+        return "A"
+    elif fans >= 25000:
+        return "B+"
+    elif fans >= 20000:
+        return "B"
+    elif fans >= 10000:
+        return "C"
+    elif fans >= 5000:
+        return "D"
+    else:
+        return "E"
 
 # 根据等级反推需要的score
 async def required_score_for_rank(target_rank, pre_status, rank, mode):
@@ -121,7 +168,7 @@ async def required_score_for_rank(target_rank, pre_status, rank, mode):
 
     required_total_score = rank_thresholds.get(target_rank, 0)
 
-    async def find_required_score(required_total_score):
+    async def produce_score(required_total_score):
         low = 0
         high = 18000000
         while True:
@@ -142,7 +189,53 @@ async def required_score_for_rank(target_rank, pre_status, rank, mode):
 
         return low
 
+    required_score = await produce_score(required_total_score)
 
-    required_score = await find_required_score(required_total_score)
+    return required_score
+
+
+async def required_score_for_fans(target_rank, pre_status, mode):
+    status = await status_calc(mode, pre_status, rank=0)
+    
+    # 设置不同等级对应的分数阈值
+    rank_thresholds = {
+        "SS+": 18000,
+        "SS": 16000,
+        "S+": 14500,
+        "S": 13000,
+        "A+": 11500,
+        "A": 10000,
+        "B+": 8000,
+        "B": 6000,
+        "C+": 4500,
+        "C": 3000,
+        "D": 0
+    }
+    
+
+    required_total_score = rank_thresholds.get(target_rank, 0)
+    
+    async def produce_score(required_total_score):
+        low = 0
+        high = 18000000
+        while True:
+            bonus = await rank_bonus(high)
+            total = status + bonus
+            if total >= required_total_score:
+                break
+            high *= 2
+            
+        while high - low > 0.1:
+            mid = (low + high) / 2
+            bonus = await rank_bonus(mid)
+            total = status + bonus
+            if total < required_total_score:
+                low = mid
+            else:
+                high = mid
+
+        return low
+
+    required_score = await produce_score(required_total_score)
 
     return required_score
