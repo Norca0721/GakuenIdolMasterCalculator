@@ -6,16 +6,16 @@ from hoshino.typing import CQEvent
 
 sv = Service('Gakuen_Calc', manage_priv=priv.SUPERUSER, enable_on_default=False)
 help = (
-'/学mas算分 Vo Da Vi [regular|pro|master|nia]  |  计算特定三维下各评级所需分数\n' +
+'/学mas算分 Vo Da Vi [regular|pro|master|nia]  |  计算特定三维下各评级所需スコア和ランク\n' +
 '/学mas算分 Vo Da Vi 终测分数  |   计算特定三维与终测分数能够达成的最低评级\n' +
 '✧ 说明事项：在不指定难度的情况，单项属性上限默认的1800'
+'✧ 说明事项：N.I.A.模式的最终选拔通过的ランク奖励算法缺失'
 )
 
 @sv.on_prefix(['/学mas算分', '/算分'])
 async def calculate_score(bot, ev: CQEvent):
 
     args = ev.message.extract_plain_text().split()
-    print(len(args))
     try:
         target_score = int(args[3])
         mode = None
@@ -123,15 +123,28 @@ async def calculate_score(bot, ev: CQEvent):
         rank = 1
         mode = mode
         msg = ""
-        msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} + {bonus} = {pre_score + bonus} 的情况下\n"
-        rank_results = ["SS+", "SS", "S+", "S", "A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"]
-        for rank_result in rank_results:
-            required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
-            if required_score > 0:
-                msg += f"达到等级 {rank_result} 需要的最低score为: {math.ceil(required_score)}\n"
+        rank_results = ["SS+", "SS", "S+", "S", "A+", "A"]
+        
+        if mode in ["regular", "pro", "master"]:
+            msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} + {bonus} = {pre_score + bonus} 的情况下\n"
+            for rank_result in rank_results:
+                required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
+                if required_score > 0:
+                    msg += f"达到等级 {rank_result} 需要的最低スコア为: {math.ceil(required_score)}\n"
 
+        elif mode == "nia":
+            msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} = {pre_score} 的情况下\n"
+            for rank_result in rank_results:
+                required_score = await required_score_for_fans(rank_result, pre_status, mode)
+                if required_score > 0:
+                    msg += f"达到等级 {rank_result} 需要的最低ランク为: {math.ceil(required_score)}\n"
+            nia_tip = "\n注：N.I.A.模式的最终选拔通过的奖励ランク算法缺失，ランク仅供参考"
+            
+        if len(msg.split("\n")) == 2:
+            msg += "已经SS+确定了捏！\n"
+            
         msg = msg.rstrip("\n")
-        await bot.send(ev,  msg)
+        await bot.send(ev,  msg + nia_tip)
 
     elif len(args) == 3:
         try:
@@ -156,12 +169,13 @@ async def calculate_score(bot, ev: CQEvent):
             bonus -= 30
 
         rank = 1
+        fans = 0
         mode = "master"
         msg = ""
         msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} + {bonus} = {pre_score + bonus} 的情况下\n"
-        rank_results = ["SS+", "SS", "S+", "S", "A+", "A", "B+", "B", "C+", "C", "D+", "D", "F"]
+        rank_results = ["SS+", "SS", "S+", "S", "A+", "A"]
         for rank_result in rank_results:
-            required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
+            required_score = await required_score_for_rank(rank_result, pre_status, rank, mode, fans)
             if required_score > 0:
                 msg += f"达到等级 {rank_result} 需要的最低score为: {math.ceil(required_score)}\n"
 
