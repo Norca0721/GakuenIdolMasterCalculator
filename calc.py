@@ -38,9 +38,8 @@ async def status_calc(mode, pre_status, rank):
     return status
 
 
-# 奖励分计算
+# 初分数计算
 async def score_bonus(score):
-    # 每个阶段的最大值和倍率
     thresholds = [(5000, 0.3), (10000, 0.15), (20000, 0.08), (30000, 0.04), (40000, 0.02), (float('inf'), 0.01)]
 
     total_score = 0
@@ -48,20 +47,18 @@ async def score_bonus(score):
 
     for threshold, multiplier in thresholds:
         if score > prev_threshold:
-            # 计算当前区间的分数范围
             if score <= threshold:
-                # 如果分数在当前区间内，计算当前区间的得分
                 segment_score = math.floor((score - prev_threshold) * multiplier)
                 total_score += segment_score
                 break
             else:
-                # 如果分数超过当前区间的最大值，计算该区间的最大得分
                 segment_score = math.floor((threshold - prev_threshold) * multiplier)
                 total_score += segment_score
         prev_threshold = threshold
 
     return total_score
 
+# N.I.A.分数计算
 async def rank_bonus(rank):
     thresholds = [(20000, 0.1), (40000, 0.085), (60000, 0.07), (80000, 0.065), (100000, 0.06), (float('inf'), 0.055)]
 
@@ -70,14 +67,11 @@ async def rank_bonus(rank):
 
     for threshold, multiplier in thresholds:
         if rank > prev_threshold:
-            # 计算当前区间的分数范围
             if rank <= threshold:
-                # 如果分数在当前区间内，计算当前区间的得分
                 segment_score = math.floor((rank - prev_threshold) * multiplier)
                 total_score += segment_score
                 break
             else:
-                # 如果分数超过当前区间的最大值，计算该区间的最大得分
                 segment_score = math.floor((threshold - prev_threshold) * multiplier)
                 total_score += segment_score
         prev_threshold = threshold
@@ -96,7 +90,7 @@ async def rank_bonust(rank):
     return rank_score
 
 
-# 计算最终的评价等级
+# 最终的评价等级
 async def calculate_rank(evaluation_score):
     if evaluation_score >= 18000:
         return "SS+"
@@ -121,6 +115,7 @@ async def calculate_rank(evaluation_score):
     else:
         return "D"
 
+# ランク对应评价
 async def fans_rank(fans):
     if fans >= 120000:
         return "SS+"
@@ -145,13 +140,12 @@ async def fans_rank(fans):
     else:
         return "E"
 
-# 根据等级反推需要的score
+# スコア逆算部分
 async def required_score_for_rank(target_rank, pre_status, rank, mode):
-    # 计算status和rank_score
+
     status = await status_calc(mode, pre_status, rank)
     rank_score = await rank_bonust(rank)
 
-    # 目标等级对应的总分
     rank_thresholds = {
         "SS+": 18000,
         "SS": 16000,
@@ -194,10 +188,10 @@ async def required_score_for_rank(target_rank, pre_status, rank, mode):
     return required_score
 
 
+# ランク逆算部分
 async def required_score_for_fans(target_rank, pre_status, mode):
     status = await status_calc(mode, pre_status, rank=0)
-    
-    # 设置不同等级对应的分数阈值
+
     rank_thresholds = {
         "SS+": 18000,
         "SS": 16000,
