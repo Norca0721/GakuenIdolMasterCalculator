@@ -85,6 +85,13 @@ async def calculate_score(bot, ev: CQEvent):
                 bonus -= 30
             if pre_status[2] == 1800:
                 bonus -= 30
+        elif mode == "test_nia":
+            if pre_status[0] == 2000:
+                bonus = 0
+            if pre_status[1] == 2000:
+                bonus = 0
+            if pre_status[2] == 2000:
+                bonus = 0  
         elif mode == "nia":
             if pre_status[0] == 2000:
                 bonus = 0
@@ -96,7 +103,7 @@ async def calculate_score(bot, ev: CQEvent):
         score = int(args[3])
         rank = 1
         mode = mode
-        if mode in ["regular", "pro", "master"]:
+        if mode in ["regular", "pro", "master", "test_nia"]:
             bonus = await score_bonus(score)
             status = await status_calc(mode, pre_status, rank)
             rank_score = await rank_bonust(rank)
@@ -158,6 +165,7 @@ async def calculate_score(bot, ev: CQEvent):
                 bonus -= 30
             if pre_status[2] == 1200:
                 bonus -= 30
+            limit = 1200
         elif mode == "pro":
             if pre_status[0] == 1500:
                 bonus -= 30
@@ -165,6 +173,7 @@ async def calculate_score(bot, ev: CQEvent):
                 bonus -= 30
             if pre_status[2] == 1500:
                 bonus -= 30
+            limit = 1500
         elif mode == "master":
             if pre_status[0] == 1800:
                 bonus -= 30
@@ -172,6 +181,7 @@ async def calculate_score(bot, ev: CQEvent):
                 bonus -= 30
             if pre_status[2] == 1800:
                 bonus -= 30
+            limit = 1800
         elif mode == "nia":
             if pre_status[0] == 2000:
                 bonus -= 30
@@ -179,33 +189,37 @@ async def calculate_score(bot, ev: CQEvent):
                 bonus -= 30
             if pre_status[2] == 2000:
                 bonus -= 30
+            limit = 2000
 
         rank = 1
         mode = mode
         msg = ""
+        nia_tip = ""
         rank_results = ["SS+", "SS", "S+", "S", "A+", "A"]
-        
-        if mode in ["regular", "pro", "master"]:
-            msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} + {bonus} = {pre_score + bonus} 的情况下\n"
-            for rank_result in rank_results:
-                required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
-                if required_score > 0:
-                    msg += f"达成等级 {rank_result} 需要的最低スコア为: {math.ceil(required_score)}\n"
+        try:
+            if mode in ["regular", "pro", "master"]:
+                msg += f"三维(单项上限{limit}) {pre_status[0]} + {pre_status[1]} + {pre_status[2]} + {bonus} = {pre_score + bonus}\n"
+                for rank_result in rank_results:
+                    required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
+                    if required_score > 0:
+                        msg += f"达成等级 {rank_result} 的最低スコア: {math.ceil(required_score)}\n"
 
-        elif mode == "nia":
-            msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} = {pre_score} 的情况下\n"
-            for rank_result in rank_results:
-                required_score = await required_score_for_fans(rank_result, pre_status, mode)
-                fans_rk = await fans_rank(required_score)
-                if required_score > 0:
-                    msg += f"达成等级 {rank_result} 需要的最低ランク为: {math.ceil(required_score)} | 对应的ランク评级：{fans_rk}\n"
-            nia_tip = "\n注：N.I.A.模式的最终选拔通过的奖励ランク算法缺失，ランク仅供参考"
-            
-        if len(msg.split("\n")) == 2:
-            msg += "已经SS+确定了捏！\n"
-            
-        msg = msg.rstrip("\n")
-        await bot.send(ev,  msg + nia_tip)
+            elif mode == "nia":
+                msg += f"三维(单项上限{limit}) {pre_status[0]} + {pre_status[1]} + {pre_status[2]} = {pre_score}\n"
+                for rank_result in rank_results:
+                    required_score = await required_score_for_fans(rank_result, pre_status, mode)
+                    fans_rk = await fans_rank(required_score)
+                    if required_score > 0:
+                        msg += f"达成等级 {rank_result} 的最低ランク: {math.ceil(required_score)} | 对应的ランク评级：{fans_rk}\n"
+                nia_tip = "\n注：N.I.A.模式的最终选拔通过的奖励ランク算法缺失，ランク仅供参考"
+                
+            if len(msg.split("\n")) == 2:
+                msg += "已经SS+确定了捏！\n"
+                
+            msg = msg.rstrip("\n")
+            await bot.send(ev,  msg + nia_tip)
+        except Exception as e:
+            await bot.send(ev, help)
 
     elif len(args) == 3:
         try:
@@ -222,6 +236,7 @@ async def calculate_score(bot, ev: CQEvent):
         pre_status = [int(args[0]), int(args[1]), int(args[2])]
         pre_score = pre_status[0] + pre_status[1] + pre_status[2]
         bonus = 90
+        limit = 1800
         if pre_status[0] == 1800:
             bonus -= 30
         if pre_status[1] == 1800:
@@ -232,13 +247,13 @@ async def calculate_score(bot, ev: CQEvent):
         rank = 1
         mode = "master"
         msg = ""
-        msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} + {bonus} = {pre_score + bonus} 的情况下\n"
+        msg += f"三维(单项上限{limit}) {pre_status[0]} + {pre_status[1]} + {pre_status[2]} + {bonus} = {pre_score + bonus}\n"
         rank_results = ["SS+", "SS", "S+", "S", "A+", "A"]
         for rank_result in rank_results:
             required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
 
             if required_score > 0:
-                msg += f"达成等级 {rank_result} 需要的最低スコア为: {math.ceil(required_score)}\n"
+                msg += f"达成等级 {rank_result} 的最低スコア: {math.ceil(required_score)}\n"
 
         msg = msg.rstrip("\n")
         await bot.send(ev,  msg)
