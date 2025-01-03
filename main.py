@@ -230,13 +230,12 @@ async def calculate_score(bot, ev: CQEvent):
             bonus -= 30
 
         rank = 1
-        fans = 0
         mode = "master"
         msg = ""
         msg += f"在三维为 {pre_status[0]} + {pre_status[1]} + {pre_status[2]} + {bonus} = {pre_score + bonus} 的情况下\n"
         rank_results = ["SS+", "SS", "S+", "S", "A+", "A"]
         for rank_result in rank_results:
-            required_score = await required_score_for_rank(rank_result, pre_status, rank, mode, fans)
+            required_score = await required_score_for_rank(rank_result, pre_status, rank, mode)
 
             if required_score > 0:
                 msg += f"达成等级 {rank_result} 需要的最低スコア为: {math.ceil(required_score)}\n"
