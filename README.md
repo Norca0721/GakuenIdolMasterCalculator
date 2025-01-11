@@ -27,7 +27,7 @@ N.I.A.最终选拔属性加成与ランク加成均与三维各Pt有关
 ### 说明事项
 
 - 不指定难度的情况，单项属性上限默认1800 -
-- N.I.A.模式无法进行精确的分数线，详见[关于N.I.A.](#关于n.i.a.)内容 -
+- N.I.A.模式无法进行精确的分数线，详见[关于N.I.A.](https://github.com/Norca0721/GakuenIdolMasterCalculator?tab=readme-ov-file#%E5%85%B3%E4%BA%8Enia)内容 -
 
 | 难度选项 | regular| pro | master | nia |
 | ---------- | ---------- | ---------- | ---------- | ---------- |
