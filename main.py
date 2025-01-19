@@ -111,7 +111,7 @@ async def calculate_score(bot, ev: CQEvent):
             total_score = status + bonus + rank_score
             rank_result = await calculate_rank(total_score)
 
-            await bot.send(ev, f"目前的三维({pre_score})与スコア能达到的最高评级为{rank_result} | 对应スコア：{total_score}")
+            await bot.send(ev, f"目前的三维({pre_score})与スコア能达到的最高评级为{rank_result} | 最終プロデュース評価：{total_score}")
         elif mode == "nia":
             bonus = await rank_bonus(score)
             status = await status_calc(mode, pre_status, rank=0)
@@ -119,7 +119,7 @@ async def calculate_score(bot, ev: CQEvent):
             total_score = status + bonus
             fans_rk = await fans_rank(target_score)
             rank_result = await calculate_rank(total_score)
-            await bot.send(ev, f"目前的三维({pre_score})与ランク能达到的最高评级为{rank_result} | 对应ランク：{total_score} | 对应ランク评价：{fans_rk}")
+            await bot.send(ev, f"目前的三维({pre_score})与ランク能达到的最高评级为{rank_result} | 最終プロデュース評価：{total_score} | ランク评价：{fans_rk}")
 
     elif len(args) == 4 and isinstance(mode, str):
         try:
