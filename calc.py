@@ -92,7 +92,11 @@ async def rank_bonust(rank):
 
 # 最终的评价等级
 async def calculate_rank(evaluation_score):
-    if evaluation_score >= 18000:
+    if evaluation_score >= 23000:
+        return "SSS+"
+    elif evaluation_score >= 20000:
+        return "SSS"
+    elif evaluation_score >= 18000:
         return "SS+"
     elif evaluation_score >= 16000:
         return "SS"
@@ -117,7 +121,11 @@ async def calculate_rank(evaluation_score):
 
 # ランク对应评价
 async def fans_rank(fans):
-    if fans >= 120000:
+    if fans >= 160000:
+        return "SSS+"
+    elif fans >= 140000:
+        return "SSS"
+    elif fans >= 120000:
         return "SS+"
     elif fans >= 100000:
         return "SS"
@@ -147,6 +155,8 @@ async def required_score_for_rank(target_rank, pre_status, rank, mode):
     rank_score = await rank_bonust(rank)
 
     rank_thresholds = {
+        "SSS+": 23000,
+        "SSS": 20000,
         "SS+": 18000,
         "SS": 16000,
         "S+": 14500,
@@ -193,6 +203,8 @@ async def required_score_for_fans(target_rank, pre_status, mode):
     status = await status_calc(mode, pre_status, rank=0)
 
     rank_thresholds = {
+        "SSS+": 23000,
+        "SSS": 20000,
         "SS+": 18000,
         "SS": 16000,
         "S+": 14500,
